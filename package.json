@@ -1,6 +1,6 @@
 {
   "name": "pushit-cli",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Interactive GitHub workflow CLI",
   "main": "src/index.js",
   "type": "module",
