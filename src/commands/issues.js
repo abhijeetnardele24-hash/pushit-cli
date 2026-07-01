@@ -1,103 +1,128 @@
-import { select, text, isCancel, spinner } from '@clack/prompts';
+import { select, text, isCancel, spinner, note } from '@clack/prompts';
 import chalk from 'chalk';
+import Table from 'cli-table3';
 import open from 'open';
-import { getRepoInfo, isRepo } from '../lib/git.js';
 import { getOctokit } from '../lib/github.js';
+import { getRepoInfo } from '../lib/git.js';
 
-export default async function manageIssues() {
-  const repoExists = await isRepo();
-  if (!repoExists) {
-    console.log(chalk.red('No git repo found in this folder.'));
-    await text({ message: 'Press Enter to return...' });
-    return;
-  }
-
+export default async function() {
   const repoInfo = await getRepoInfo();
   if (!repoInfo) {
-    console.log(chalk.red('No GitHub remote "origin" found.'));
+    note(chalk.red('Not a GitHub repository.'));
     await text({ message: 'Press Enter to return...' });
     return;
   }
 
   const action = await select({
-    message: 'Issues:',
+    message: 'Issues Options:',
     options: [
-      { value: 'view', label: 'View open issues' },
-      { value: 'create', label: 'Create new issue' },
-      { value: 'back', label: 'Back' }
+      { value: 'list', label: '[ ☰ ] List Issues' },
+      { value: 'create', label: '[ + ] Create Issue' },
+      { value: 'open', label: '[ ⚑ ] Open an Issue in Browser' },
+      { value: 'back', label: '[ ↵ ] Back to main menu' }
     ]
   });
 
   if (isCancel(action) || action === 'back') return;
 
   const octokit = getOctokit();
+  const s = spinner();
 
-  if (action === 'create') {
-    const title = await text({ message: 'Issue Title:' });
-    if (isCancel(title) || !title) return manageIssues();
+  if (action === 'list') {
+    s.start('Fetching Issues...');
+    const { data: issues } = await octokit.rest.issues.listForRepo({ owner: repoInfo.owner, repo: repoInfo.repo, state: 'all' });
+    s.stop(chalk.green('✓ Issues fetched'));
 
-    const body = await text({ message: 'Issue Body (optional):' });
-    if (isCancel(body)) return manageIssues();
+    const actualIssues = issues.filter(i => !i.pull_request);
 
-    const s = spinner();
-    s.start('Creating Issue...');
-    try {
-      const { data: issue } = await octokit.rest.issues.create({
-        owner: repoInfo.owner,
-        repo: repoInfo.repo,
-        title,
-        body
+    if (actualIssues.length === 0) {
+      console.log(chalk.gray('\nNo issues found.\n'));
+    } else {
+      const table = new Table({
+        head: [chalk.cyan('ID'), chalk.cyan('Title'), chalk.cyan('Status'), chalk.cyan('Author')]
       });
-      s.stop(chalk.green(`✓ Issue created: ${issue.html_url}`));
-      await text({ message: 'Press Enter to return...' });
-    } catch (err) {
-      s.stop(chalk.red('Failed to create issue'));
-      console.error(chalk.red(err.message));
-      await text({ message: 'Press Enter to return...' });
+      actualIssues.slice(0, 15).forEach(issue => {
+        const status = issue.state === 'closed' ? chalk.red('Closed') : chalk.green('Open');
+        table.push([`#${issue.number}`, issue.title.substring(0, 50), status, issue.user.login]);
+      });
+      console.log('\n' + table.toString() + '\n');
     }
-    return manageIssues();
+    await text({ message: 'Press Enter to return...' });
   }
 
-  if (action === 'view') {
-    const s = spinner();
-    s.start('Fetching open issues...');
-    try {
-      const { data: issues } = await octokit.rest.issues.listForRepo({
-        owner: repoInfo.owner,
-        repo: repoInfo.repo,
-        state: 'open'
+  if (action === 'open') {
+    const issueNum = await text({ message: 'Enter Issue Number (e.g. 1):' });
+    if (!isCancel(issueNum) && issueNum.trim() !== '') {
+      await open(`https://github.com/${repoInfo.owner}/${repoInfo.repo}/issues/${issueNum}`);
+    }
+  }
+
+  if (action === 'create') {
+    let state = {
+      title: '',
+      body: ''
+    };
+
+    const askTitle = async () => {
+      const res = await text({ message: 'Issue Title:', defaultValue: state.title });
+      if (isCancel(res)) return false;
+      state.title = res; return true;
+    };
+    const askBody = async () => {
+      const res = await text({ message: 'Description:', defaultValue: state.body });
+      if (isCancel(res)) return false;
+      state.body = res; return true;
+    };
+
+    if (!(await askTitle())) return;
+    if (!(await askBody())) return;
+
+    // Review & Edit Loop
+    while (true) {
+      console.log();
+      const table = new Table({
+        head: [chalk.cyan('Field'), chalk.cyan('Value')]
       });
-      s.stop();
+      table.push(
+        ['Title', chalk.green(state.title)],
+        ['Description', chalk.gray(state.body || '(empty)')]
+      );
+      console.log(chalk.bold.yellow('📝 Review Issue:'));
+      console.log(table.toString());
+      console.log();
 
-      // Filter out PRs, as GitHub API returns PRs as issues too
-      const actualIssues = issues.filter(i => !i.pull_request);
-
-      if (actualIssues.length === 0) {
-        console.log(chalk.yellow('No open issues.'));
-        await text({ message: 'Press Enter to return...' });
-        return manageIssues();
-      }
-
-      const issueSelection = await select({
-        message: 'Select an issue to open in browser:',
+      const editAction = await select({
+        message: 'Does this look correct?',
         options: [
-          ...actualIssues.map(i => ({
-            value: i.html_url,
-            label: `#${i.number} ${i.title} (by ${i.user.login})`
-          })),
-          { value: 'back', label: 'Back' }
+          { value: 'proceed', label: '🚀 Yes, Create Issue!' },
+          { value: 'edit_title', label: '✏️  Edit Title' },
+          { value: 'edit_body', label: '✏️  Edit Description' },
+          { value: 'cancel', label: '❌ Cancel' }
         ]
       });
 
-      if (isCancel(issueSelection) || issueSelection === 'back') return manageIssues();
+      if (isCancel(editAction) || editAction === 'cancel') return;
+      if (editAction === 'proceed') break;
+      
+      if (editAction === 'edit_title') await askTitle();
+      if (editAction === 'edit_body') await askBody();
+    }
 
-      await open(issueSelection);
-      return manageIssues();
+    try {
+      s.start('Creating Issue...');
+      const { data: issue } = await octokit.rest.issues.create({
+        owner: repoInfo.owner,
+        repo: repoInfo.repo,
+        title: state.title,
+        body: state.body
+      });
+      s.stop(chalk.green('✓ Issue created!'));
+      note(`Live at: ${issue.html_url}`);
+      await text({ message: 'Press Enter to return...' });
     } catch (err) {
-      s.stop(chalk.red('Failed to fetch issues'));
+      s.stop(chalk.red('Failed'));
       console.error(chalk.red(err.message));
       await text({ message: 'Press Enter to return...' });
-      return manageIssues();
     }
   }
 }

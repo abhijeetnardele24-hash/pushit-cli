@@ -1,11 +1,12 @@
 {
   "name": "pushit-cli",
-  "version": "1.1.0",
-  "description": "Interactive GitHub workflow CLI",
+  "version": "1.8.0",
+  "description": "The Ultimate Next-Gen Interactive GitHub Workflow CLI with AI Commits, Undo Manager, and Smart Staging.",
   "main": "src/index.js",
   "type": "module",
   "bin": {
-    "pushit": "src/index.js"
+    "pushit": "./src/index.js",
+    "pi": "./src/index.js"
   },
   "scripts": {
     "test": "echo \"No tests specified yet\" && exit 0"
@@ -14,18 +15,14 @@
     "github",
     "git",
     "cli",
+    "ai-commit",
+    "git-undo",
+    "interactive-staging",
     "automation",
     "productivity",
     "git-workflow",
     "developer-tools",
-    "terminal",
-    "command-line",
-    "github-api",
-    "github-actions",
-    "version-control",
-    "devx",
-    "dx",
-    "git-cli"
+    "terminal"
   ],
   "author": "Abhijeet Nardele",
   "license": "MIT",

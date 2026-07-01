@@ -1,120 +1,145 @@
-import { select, text, isCancel, spinner } from '@clack/prompts';
+import { select, text, isCancel, spinner, note } from '@clack/prompts';
 import chalk from 'chalk';
+import Table from 'cli-table3';
 import open from 'open';
-import { getGit, isRepo, getRepoInfo } from '../lib/git.js';
 import { getOctokit } from '../lib/github.js';
+import { getRepoInfo, getGit } from '../lib/git.js';
 
-export default async function managePRs() {
-  const repoExists = await isRepo();
-  if (!repoExists) {
-    console.log(chalk.red('No git repo found in this folder.'));
-    await text({ message: 'Press Enter to return to menu...' });
-    return;
-  }
-
+export default async function() {
   const repoInfo = await getRepoInfo();
   if (!repoInfo) {
-    console.log(chalk.red('No GitHub remote "origin" found.'));
-    await text({ message: 'Press Enter to return to menu...' });
+    note(chalk.red('Not a GitHub repository.'));
+    await text({ message: 'Press Enter to return...' });
     return;
   }
 
   const action = await select({
-    message: 'Pull Requests:',
+    message: 'Pull Requests Options:',
     options: [
-      { value: 'create', label: 'Create new PR' },
-      { value: 'view', label: 'View open PRs' },
-      { value: 'back', label: 'Back' }
+      { value: 'list', label: '[ ☰ ] List Pull Requests' },
+      { value: 'create', label: '[ + ] Create Pull Request' },
+      { value: 'open', label: '[ ↹ ] Open a PR in Browser' },
+      { value: 'back', label: '[ ↵ ] Back to main menu' }
     ]
   });
 
   if (isCancel(action) || action === 'back') return;
 
   const octokit = getOctokit();
+  const s = spinner();
+
+  if (action === 'list') {
+    s.start('Fetching Pull Requests...');
+    const { data: prs } = await octokit.rest.pulls.list({ owner: repoInfo.owner, repo: repoInfo.repo, state: 'all' });
+    s.stop(chalk.green('✓ Pull Requests fetched'));
+
+    if (prs.length === 0) {
+      console.log(chalk.gray('\nNo pull requests found.\n'));
+    } else {
+      const table = new Table({
+        head: [chalk.cyan('ID'), chalk.cyan('Title'), chalk.cyan('Status'), chalk.cyan('Author')]
+      });
+      prs.slice(0, 15).forEach(pr => {
+        let status = chalk.green('Open');
+        if (pr.state === 'closed') status = pr.merged_at ? chalk.magenta('Merged') : chalk.red('Closed');
+        table.push([`#${pr.number}`, pr.title.substring(0, 50), status, pr.user.login]);
+      });
+      console.log('\n' + table.toString() + '\n');
+    }
+    await text({ message: 'Press Enter to return...' });
+  }
+
+  if (action === 'open') {
+    const prNumber = await text({ message: 'Enter PR Number (e.g. 1):' });
+    if (!isCancel(prNumber) && prNumber.trim() !== '') {
+      await open(`https://github.com/${repoInfo.owner}/${repoInfo.repo}/pull/${prNumber}`);
+    }
+  }
 
   if (action === 'create') {
     const git = getGit();
-    const branches = await git.branchLocal();
-    const branchList = branches.all;
+    const branchSummary = await git.branchLocal();
+    const currentBranch = branchSummary.current;
 
-    const title = await text({ message: 'PR Title:' });
-    if (isCancel(title) || !title) return managePRs();
+    let state = {
+      title: '',
+      body: '',
+      head: currentBranch,
+      base: 'main'
+    };
 
-    const description = await text({ message: 'Description (optional):' });
-    if (isCancel(description)) return managePRs();
+    const askTitle = async () => {
+      const res = await text({ message: 'PR Title:', defaultValue: state.title });
+      if (isCancel(res)) return false;
+      state.title = res; return true;
+    };
+    const askBody = async () => {
+      const res = await text({ message: 'Description:', defaultValue: state.body });
+      if (isCancel(res)) return false;
+      state.body = res; return true;
+    };
+    const askBase = async () => {
+      const res = await text({ message: 'Base branch (merging into):', defaultValue: state.base });
+      if (isCancel(res)) return false;
+      state.base = res; return true;
+    };
 
-    const fromBranch = await select({
-      message: 'From branch:',
-      options: branchList.map(b => ({ value: b, label: b })),
-      initialValue: branches.current
-    });
-    if (isCancel(fromBranch)) return managePRs();
+    if (!(await askTitle())) return;
+    if (!(await askBody())) return;
+    if (!(await askBase())) return;
 
-    const intoBranch = await select({
-      message: 'Into branch:',
-      options: branchList.map(b => ({ value: b, label: b })),
-      initialValue: branchList.includes('main') ? 'main' : (branchList.includes('master') ? 'master' : undefined)
-    });
-    if (isCancel(intoBranch)) return managePRs();
-
-    const s = spinner();
-    s.start('Creating Pull Request...');
-    try {
-      const { data: pr } = await octokit.rest.pulls.create({
-        owner: repoInfo.owner,
-        repo: repoInfo.repo,
-        title,
-        body: description,
-        head: fromBranch,
-        base: intoBranch
+    // Review & Edit Loop
+    while (true) {
+      console.log();
+      const table = new Table({
+        head: [chalk.cyan('Field'), chalk.cyan('Value')]
       });
-      s.stop(chalk.green(`✓ PR created: ${pr.html_url}`));
-      await text({ message: 'Press Enter to return...' });
-    } catch (err) {
-      s.stop(chalk.red('Failed to create PR'));
-      console.error(chalk.red(err.message));
-      await text({ message: 'Press Enter to return...' });
-    }
-    return managePRs();
-  }
+      table.push(
+        ['Title', chalk.green(state.title)],
+        ['Description', chalk.gray(state.body || '(empty)')],
+        ['Merging from', chalk.yellow(state.head)],
+        ['Merging into', chalk.magenta(state.base)]
+      );
+      console.log(chalk.bold.yellow('📝 Review Pull Request:'));
+      console.log(table.toString());
+      console.log();
 
-  if (action === 'view') {
-    const s = spinner();
-    s.start('Fetching open PRs...');
-    try {
-      const { data: prs } = await octokit.rest.pulls.list({
-        owner: repoInfo.owner,
-        repo: repoInfo.repo,
-        state: 'open'
-      });
-      s.stop();
-
-      if (prs.length === 0) {
-        console.log(chalk.yellow('No open pull requests.'));
-        await text({ message: 'Press Enter to return...' });
-        return managePRs();
-      }
-
-      const prSelection = await select({
-        message: 'Select a PR to open in browser:',
+      const editAction = await select({
+        message: 'Does this look correct?',
         options: [
-          ...prs.map(pr => ({
-            value: pr.html_url,
-            label: `#${pr.number} ${pr.title} (by ${pr.user.login})`
-          })),
-          { value: 'back', label: 'Back' }
+          { value: 'proceed', label: '🚀 Yes, Create PR!' },
+          { value: 'edit_title', label: '✏️  Edit Title' },
+          { value: 'edit_body', label: '✏️  Edit Description' },
+          { value: 'edit_base', label: '✏️  Edit Base Branch' },
+          { value: 'cancel', label: '❌ Cancel' }
         ]
       });
 
-      if (isCancel(prSelection) || prSelection === 'back') return managePRs();
+      if (isCancel(editAction) || editAction === 'cancel') return;
+      if (editAction === 'proceed') break;
+      
+      if (editAction === 'edit_title') await askTitle();
+      if (editAction === 'edit_body') await askBody();
+      if (editAction === 'edit_base') await askBase();
+    }
 
-      await open(prSelection);
-      return managePRs();
+    try {
+      s.start('Creating Pull Request...');
+      const { data: pr } = await octokit.rest.pulls.create({
+        owner: repoInfo.owner,
+        repo: repoInfo.repo,
+        title: state.title,
+        body: state.body,
+        head: state.head,
+        base: state.base
+      });
+      s.stop(chalk.green('✓ Pull Request created!'));
+      note(`Live at: ${pr.html_url}`);
+      await text({ message: 'Press Enter to return...' });
     } catch (err) {
-      s.stop(chalk.red('Failed to fetch PRs'));
+      s.stop(chalk.red('Failed'));
       console.error(chalk.red(err.message));
       await text({ message: 'Press Enter to return...' });
-      return managePRs();
     }
   }
 }

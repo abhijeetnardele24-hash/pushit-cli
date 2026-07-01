@@ -1,61 +1,66 @@
 <div align="center">
-  <h1>🚀 pushit-cli</h1>
-  <p><b>The Ultimate Interactive GitHub Workflow CLI</b></p>
+  <pre>
+  ___ _   _ ___ _  _ ___ _____ 
+ | _ \ | | / __| || |_ _|_   _|
+ |  _/ |_| \__ \ __ || |  | |  
+ |_|  \___/|___/_||_|___| |_|  
+  </pre>
+  <p><b>The Ultimate Next-Gen Interactive GitHub Workflow CLI</b></p>
 
-  [![Version](https://img.shields.io/npm/v/pushit-cli.svg?style=for-the-badge&color=success)](https://www.npmjs.com/package/pushit-cli)
+  [![Version](https://img.shields.io/npm/v/pushit-cli.svg?style=for-the-badge&color=magenta)](https://www.npmjs.com/package/pushit-cli)
   [![License](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](#license)
-  [![PRs Welcome](https://img.shields.io/badge/PRs-Welcome-brightgreen.svg?style=for-the-badge)](https://makeapullrequest.com)
-
-  <br />
-  
-  <p align="center">
-    <img src="assets/main-menu.png" width="48%" alt="Main Menu" style="border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.5);" />
-    &nbsp;
-    <img src="assets/settings-menu.png" width="48%" alt="Settings Menu" style="border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.5);" />
-  </p>
 
   <br />
 </div>
 
 ---
 
-**`pushit-cli`** is a production-ready, highly interactive CLI tool that brings the entire GitHub experience directly into your terminal. Say goodbye to constantly switching between your terminal and browser. Create repositories, push code, manage branches, handle pull requests, and resolve issues—all without ever leaving your command line.
+**`pushit-cli`** is a production-ready, highly interactive CLI tool that brings the entire GitHub experience directly into your terminal. Designed with a sleek, minimalist hacker aesthetic, it replaces tedious terminal commands with lightning-fast interactive menus.
 
-## ✨ Features
+## 🚀 Installation
 
-- 🆕 **One-Click Repo Creation**: Interactively create a repository, generate a README, add a `.gitignore`, pick a License, and push your code in a single fluid motion.
-- 📤 **Smart Commit & Push**: Interactive file staging with built-in conventional commits (`feat:`, `fix:`, `docs:`). No more messy git logs.
-- 🗑️ **Bulk Repository Management**: Easily view paginated lists of your repositories, clone them instantly, or bulk-delete multiple repos at once.
-- 🌿 **Advanced Branching**: Switch, create, view, and delete branches through a beautiful CLI interface.
-- 🔀 **Pull Requests & Issues**: Browse, create, and manage PRs and Issues seamlessly.
-- 🚀 **Zero-Friction Authentication**: Uses OAuth Device Flow for a one-time, incredibly smooth login process.
-
-## 📦 Requirements
-
-- **Node.js** `v18.0.0` or higher
-- Git installed on your machine
-
-## ⚡ Installation
-
-Install `pushit-cli` globally using npm so you can run it from any directory on your machine:
+Install `pushit-cli` globally using npm:
 
 ```bash
 npm install -g pushit-cli
 ```
 
-## 🚀 Quick Start
+## ⚡ Quick Start (The Small Word!)
 
-To launch the interactive dashboard, simply run the following command in any project folder:
+We know `pushit-cli` is a mouthful to type every time. That's why we've aliased it to the ultimate short-word: **`pi`**
+
+To launch the interactive dashboard, just open any folder and type:
 
 ```bash
-pushit
+pi
 ```
+*(You can also use `pushit` if you prefer!)*
 
-*On your very first run, it will ask you to quickly authenticate your GitHub account using a secure 4-digit code. After that, you're good to go forever!*
+## ✨ Killer Features
+
+### 🤖 AI-Powered Auto-Commits
+Never stare at a blank commit message prompt again. When you select the Push command, you can ask the AI to analyze your staged files and **automatically generate a perfect Conventional Commit message** for you.
+
+### 🗂️ Interactive File Staging
+No more blind `git add .`. When committing, **`pi`** intercepts your git status and presents a beautiful checkbox menu. Press `Space` to precisely select which modified files you want to include in the commit, protecting you from accidentally pushing `.env` files.
+
+### ⏪ History & Undo Manager
+Git mistakes happen. We built a dedicated Undo Manager directly into the CLI.
+- **Undo Last Commit**: Instantly revert your last commit (without losing any of your code) with one click!
+- **Stash Management**: Keep your repo clean by safely stashing WIP code and popping it back via an interactive menu.
+
+### 📦 Bulk Repository Management
+Easily view paginated lists of your GitHub repositories, clone them instantly without needing URLs, or bulk-delete multiple repos at once.
+
+### 🔀 Pull Requests & Issues
+Browse, create, and manage PRs and Issues seamlessly. Read the descriptions natively inside your terminal.
+
+## 🏗️ Enterprise Architecture
+Under the hood, **`pi`** uses a highly robust Dynamic Command Registry, Pre-flight Configuration Middleware, and Global Error Handling. It won't crash on you, and it will always guide you gracefully back to the main menu.
 
 ## 🤝 Contributing
 
-Contributions, issues, and feature requests are always welcome! Feel free to check the [issues page](../../issues). 
+Contributions, issues, and feature requests are always welcome! 
 
 1. Fork the Project
 2. Create your Feature Branch (`git checkout -b feat/AmazingFeature`)
