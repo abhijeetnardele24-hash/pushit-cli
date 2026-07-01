@@ -5,74 +5,80 @@
  |  _/ |_| \__ \ __ || |  | |  
  |_|  \___/|___/_||_|___| |_|  
   </pre>
-  <p><b>The Ultimate Next-Gen Interactive GitHub Workflow CLI</b></p>
+  <p><b>Interactive CLI for GitHub Workflow Automation</b></p>
 
-  [![Version](https://img.shields.io/npm/v/pushit-cli.svg?style=for-the-badge&color=magenta)](https://www.npmjs.com/package/pushit-cli)
-  [![License](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](#license)
+  [![npm version](https://img.shields.io/npm/v/pushit-cli.svg?style=flat-square)](https://www.npmjs.com/package/pushit-cli)
+  [![License](https://img.shields.io/npm/l/pushit-cli.svg?style=flat-square)](#license)
 
   <br />
 </div>
 
----
+## Overview
 
-**`pushit-cli`** is a production-ready, highly interactive CLI tool that brings the entire GitHub experience directly into your terminal. Designed with a sleek, minimalist hacker aesthetic, it replaces tedious terminal commands with lightning-fast interactive menus.
+`pushit-cli` is a terminal-native, interactive interface for executing complex GitHub operations. It abstracts conventional git commands and GitHub REST API interactions into a centralized dashboard, allowing developers to manage repository state, orchestrate pull requests, and automate commit generation without leaving the terminal environment.
 
-## 🚀 Installation
+## Installation
 
-Install `pushit-cli` globally using npm:
+The package requires Node.js (v18.0.0 or higher) and a local Git installation.
 
 ```bash
 npm install -g pushit-cli
 ```
 
-## ⚡ Quick Start (The Small Word!)
+### Execution
 
-We know `pushit-cli` is a mouthful to type every time. That's why we've aliased it to the ultimate short-word: **`pi`**
-
-To launch the interactive dashboard, just open any folder and type:
+The CLI exports two bin aliases: `pushit` and the shorthand `pi`. 
 
 ```bash
+# Launch the interactive interface
 pi
 ```
-*(You can also use `pushit` if you prefer!)*
 
-## ✨ Killer Features
+On initial execution, the CLI will prompt for OAuth Device Flow authentication. The resulting token is encrypted and persisted locally for subsequent sessions.
 
-### 🤖 AI-Powered Auto-Commits
-Never stare at a blank commit message prompt again. When you select the Push command, you can ask the AI to analyze your staged files and **automatically generate a perfect Conventional Commit message** for you.
+## Core Capabilities
 
-### 🗂️ Interactive File Staging
-No more blind `git add .`. When committing, **`pi`** intercepts your git status and presents a beautiful checkbox menu. Press `Space` to precisely select which modified files you want to include in the commit, protecting you from accidentally pushing `.env` files.
+### Algorithmic Commit Generation
+Integrates diff parsing to automatically infer conventional commit scopes and subjects (`feat`, `fix`, `chore`, etc.). This eliminates the manual overhead of writing commit messages while maintaining a pristine Git history.
 
-### ⏪ History & Undo Manager
-Git mistakes happen. We built a dedicated Undo Manager directly into the CLI.
-- **Undo Last Commit**: Instantly revert your last commit (without losing any of your code) with one click!
-- **Stash Management**: Keep your repo clean by safely stashing WIP code and popping it back via an interactive menu.
+### Granular File Staging
+Overrides the default `git add .` behavior by exposing a multiselect buffer interface. This enables precise selection of modified or untracked files for the staging area prior to commit execution.
 
-### 📦 Bulk Repository Management
-Easily view paginated lists of your GitHub repositories, clone them instantly without needing URLs, or bulk-delete multiple repos at once.
+### State & History Management
+Provides a wrapper around core Git reset and stash functionality:
+- **Soft Resets:** Revert the `HEAD` pointer while preserving the working tree and index.
+- **Stash Orchestration:** Isolate uncommitted changes into the stash stack and conditionally pop them via interactive selection.
 
-### 🔀 Pull Requests & Issues
-Browse, create, and manage PRs and Issues seamlessly. Read the descriptions natively inside your terminal.
+### Repository Administration
+Direct integration with the GitHub API allows for bulk fetching of repository metadata, instant remote repository initialization, and automated `.gitignore`/License bootstrapping.
 
-## 🏗️ Enterprise Architecture
-Under the hood, **`pi`** uses a highly robust Dynamic Command Registry, Pre-flight Configuration Middleware, and Global Error Handling. It won't crash on you, and it will always guide you gracefully back to the main menu.
+## Architecture
 
-## 🤝 Contributing
+The CLI is built on a modular, middleware-driven architecture to ensure scalability and fault tolerance:
 
-Contributions, issues, and feature requests are always welcome! 
+- **Dynamic Command Registry:** Discards monolithic routing in favor of ES6 dynamic imports. Command modules (`src/commands/*.js`) are lazy-loaded at runtime based on the selection vector.
+- **Pre-flight Middleware:** Commands export configuration objects (e.g., `export const config = { requireGit: true };`). The router intercepts execution, validating the current directory state against the configuration schema before yielding control.
+- **Global Exception Handling:** A centralized runtime wrapper catches synchronous and asynchronous exceptions, preventing orphaned background processes and gracefully restoring the primary event loop.
 
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feat/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'feat: Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feat/AmazingFeature`)
-5. Open a Pull Request
+## Development Setup
 
-## 📝 License
+To run the CLI locally for development or contributions:
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/yourusername/pushit-cli.git
+cd pushit-cli
+
+# 2. Install dependencies
+npm install
+
+# 3. Link the package globally
+npm link
+
+# 4. Run the CLI
+pi
+```
+
+## License
 
 Distributed under the MIT License. See `LICENSE` for more information.
-
----
-<div align="center">
-  Built with ❤️ by Abhijeet Nardele
-</div>
