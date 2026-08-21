@@ -43,7 +43,7 @@ export default async function() {
       });
       actualIssues.slice(0, 15).forEach(issue => {
         const status = issue.state === 'closed' ? chalk.red('Closed') : chalk.green('Open');
-        table.push([`#${issue.number}`, issue.title.substring(0, 50), status, issue.user.login]);
+        table.push([`#${issue.number}`, issue.title.substring(0, 50), status, issue.user?.login || 'Unknown']);
       });
       console.log('\n' + table.toString() + '\n');
     }
@@ -119,7 +119,7 @@ export default async function() {
       s.stop(chalk.green('✓ Issue created!'));
       note(`Live at: ${issue.html_url}`);
       await text({ message: 'Press Enter to return...' });
-    } catch (err) {
+    } catch (err: any) {
       s.stop(chalk.red('Failed'));
       console.error(chalk.red(err.message));
       await text({ message: 'Press Enter to return...' });

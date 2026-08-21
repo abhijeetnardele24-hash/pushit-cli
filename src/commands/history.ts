@@ -97,7 +97,7 @@ export default async function() {
         }
         break;
     }
-  } catch (err) {
+  } catch (err: any) {
     s.stop(chalk.red('Operation failed.'));
     console.error(chalk.red(err.message));
   }

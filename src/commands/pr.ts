@@ -42,7 +42,7 @@ export default async function() {
       prs.slice(0, 15).forEach(pr => {
         let status = chalk.green('Open');
         if (pr.state === 'closed') status = pr.merged_at ? chalk.magenta('Merged') : chalk.red('Closed');
-        table.push([`#${pr.number}`, pr.title.substring(0, 50), status, pr.user.login]);
+        table.push([`#${pr.number}`, pr.title.substring(0, 50), status, pr.user?.login || 'Unknown']);
       });
       console.log('\n' + table.toString() + '\n');
     }
@@ -136,7 +136,7 @@ export default async function() {
       s.stop(chalk.green('✓ Pull Request created!'));
       note(`Live at: ${pr.html_url}`);
       await text({ message: 'Press Enter to return...' });
-    } catch (err) {
+    } catch (err: any) {
       s.stop(chalk.red('Failed'));
       console.error(chalk.red(err.message));
       await text({ message: 'Press Enter to return...' });

@@ -1,0 +1,25 @@
+import Conf from 'conf';
+
+const config = new Conf<{ github_token?: string, github_username?: string }>({ projectName: 'pushit' });
+
+export function getToken(): string | undefined {
+  return config.get('github_token');
+}
+
+export function setToken(token: string | null): void {
+  if (token) config.set('github_token', token);
+  else config.delete('github_token');
+}
+
+export function getUsername(): string | undefined {
+  return config.get('github_username');
+}
+
+export function setUsername(username: string | null): void {
+  if (username) config.set('github_username', username);
+  else config.delete('github_username');
+}
+
+export function clearConfig(): void {
+  config.clear();
+}

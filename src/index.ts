@@ -68,7 +68,6 @@ async function mainMenu() {
     process.exit(0);
   }
 
-  // Global Error Handler & Dynamic Command Registry
   try {
     const commandModule = await import(`./commands/${action}.js`);
     
@@ -83,10 +82,10 @@ async function mainMenu() {
 
     // Execute the command
     await commandModule.default();
-  } catch (error) {
+  } catch (error: any) {
     // Global catch-all for any command that crashes unexpectedly
     console.log('\n');
-    note(chalk.red(`Fatal Error in command [${action}]:\n${error.message}`));
+    note(chalk.red(`Fatal Error in command [${String(action)}]:\n${error?.message || error}`));
     await text({ message: 'Press Enter to safely return to menu...' });
   }
   

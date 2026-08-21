@@ -1,15 +1,20 @@
-import simpleGit from 'simple-git';
+import { simpleGit, SimpleGit } from 'simple-git';
 
-export function getGit(dir = process.cwd()) {
+export function getGit(dir: string = process.cwd()): SimpleGit {
   return simpleGit(dir);
 }
 
-export async function isRepo(dir = process.cwd()) {
+export async function isRepo(dir: string = process.cwd()): Promise<boolean> {
   const git = getGit(dir);
   return git.checkIsRepo();
 }
 
-export async function getRepoInfo(dir = process.cwd()) {
+export interface RepoInfo {
+  owner: string;
+  repo: string;
+}
+
+export async function getRepoInfo(dir: string = process.cwd()): Promise<RepoInfo | null> {
   const git = getGit(dir);
   try {
     const remotes = await git.getRemotes(true);

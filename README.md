@@ -143,13 +143,18 @@ cd pushit-cli
 npm install
 ```
 
-3. **Symlink the Binary**
+3. **Compile the TypeScript Source**
+```bash
+npm run build
+```
+
+4. **Symlink the Binary**
 Link the local package to your global node execution path to test the CLI live:
 ```bash
 npm link
 ```
 
-4. **Execute Local Build**
+5. **Execute Local Build**
 ```bash
 pi
 ```

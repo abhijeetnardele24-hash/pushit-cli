@@ -26,11 +26,11 @@ export default async function() {
     };
   });
 
-  const filesToStage = await multiselect({
+  const filesToStage = (await multiselect({
     message: 'Select files to commit (Space to select, Enter to confirm):',
     options: fileOptions,
     required: true
-  });
+  })) as string[] | symbol;
 
   if (isCancel(filesToStage)) return;
 
@@ -77,7 +77,7 @@ export default async function() {
     s.stop(chalk.green(`✓ Pushed to ${branch}`));
     
     await text({ message: 'Press Enter to return to menu...' });
-  } catch (err) {
+  } catch (err: any) {
     s.stop(chalk.red('Failed'));
     console.error(chalk.red(err.message));
     await text({ message: 'Press Enter to return to menu...' });

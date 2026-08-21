@@ -141,7 +141,7 @@ jobs:
       const branchInfo = await git.branchLocal();
       await git.push(['-u', 'origin', branchInfo.current]);
       s.stop(chalk.green('✓ Pushed to GitHub. CI is now active!'));
-    } catch (err) {
+    } catch (err: any) {
       s.stop(chalk.red('Failed to push'));
       console.error(chalk.red(err.message));
     }

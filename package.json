@@ -2,13 +2,15 @@
   "name": "pushit-cli",
   "version": "1.8.0",
   "description": "The Ultimate Next-Gen Interactive GitHub Workflow CLI with AI Commits, Undo Manager, and Smart Staging.",
-  "main": "src/index.js",
+  "main": "dist/index.js",
   "type": "module",
   "bin": {
-    "pushit": "./src/index.js",
-    "pi": "./src/index.js"
+    "pushit": "./dist/index.js",
+    "pi": "./dist/index.js"
   },
   "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "npm run build",
     "test": "echo \"No tests specified yet\" && exit 0"
   },
   "keywords": [
@@ -39,5 +41,10 @@
   },
   "engines": {
     "node": ">=18.0.0"
+  },
+  "devDependencies": {
+    "@octokit/types": "^17.0.0",
+    "@types/node": "^26.2.0",
+    "typescript": "^7.0.2"
   }
 }

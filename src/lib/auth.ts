@@ -3,13 +3,12 @@ import open from 'open';
 import { spinner, note, text } from '@clack/prompts';
 import chalk from 'chalk';
 
-// We will use native fetch available in Node 18+
 // Replace this placeholder with the actual Client ID from GitHub OAuth App
 export const CLIENT_ID = 'Ov23lipAkykcdDWVl593'; 
 
 const SCOPE = 'repo workflow delete_repo user';
 
-export async function authorizeDevice() {
+export async function authorizeDevice(): Promise<string> {
   const s = spinner();
   s.start('Requesting authorization from GitHub...');
 
@@ -27,7 +26,7 @@ export async function authorizeDevice() {
       })
     });
 
-    const initData = await initResponse.json();
+    const initData: any = await initResponse.json();
 
     if (initData.error) {
       s.stop(chalk.red('Failed to request device code.'));
@@ -58,7 +57,7 @@ export async function authorizeDevice() {
     s.start('Waiting for you to authorize in your browser...');
 
     // 2. Poll for the access token
-    let accessToken = null;
+    let accessToken: string | null = null;
     let pollInterval = interval * 1000;
 
     while (!accessToken) {
@@ -77,7 +76,7 @@ export async function authorizeDevice() {
         })
       });
 
-      const pollData = await pollResponse.json();
+      const pollData: any = await pollResponse.json();
 
       if (pollData.access_token) {
         accessToken = pollData.access_token;
@@ -98,7 +97,7 @@ export async function authorizeDevice() {
     s.stop(chalk.green('Successfully authorized!'));
     return accessToken;
 
-  } catch (error) {
+  } catch (error: any) {
     s.stop(chalk.red('An error occurred during authorization.'));
     console.error(chalk.red(error.message));
     process.exit(1);

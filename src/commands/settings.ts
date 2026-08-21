@@ -29,16 +29,16 @@ export default async function settings() {
       s.stop();
 
       const token = getToken();
-      const maskedToken = '*'.repeat(16) + token.slice(-4);
+      const maskedToken = '*'.repeat(16) + (token || '').slice(-4);
 
       console.log(chalk.cyan('\n--- Connected Account ---'));
       console.log(`Username: ${user.login}`);
       console.log(`Email:    ${user.email || 'Not public'}`);
-      console.log(`Repos:    ${user.public_repos} public, ${user.total_private_repos || 0} private`);
+      console.log(`Repos:    ${user.public_repos} public, ${(user as any).total_private_repos || 0} private`);
       console.log(`Token:    ${maskedToken}`);
       console.log(chalk.cyan('-------------------------\n'));
 
-    } catch (err) {
+    } catch (err: any) {
       s.stop(chalk.red('Failed to fetch account details'));
       console.error(chalk.red(err.message));
     }
@@ -66,12 +66,12 @@ export default async function settings() {
   }
 
   if (action === 'branch') {
-    const currentDefault = config.get('default_branch', 'main');
-    const newBranch = await text({
+    const currentDefault = config.get('default_branch', 'main') as string;
+    const newBranch = (await text({
       message: 'New default branch name:',
       defaultValue: currentDefault,
       placeholder: currentDefault
-    });
+    })) as string | symbol;
     
     if (!isCancel(newBranch) && newBranch) {
       config.set('default_branch', newBranch);

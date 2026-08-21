@@ -167,7 +167,7 @@ export default async function() {
       const author = getUsername();
       if (state.license === 'mit') {
         const { data: lic } = await octokit.rest.licenses.get({ license: state.license });
-        licenseText = lic.body.replace('[year]', year).replace('[fullname]', author);
+        licenseText = lic.body.replace('[year]', year.toString()).replace('[fullname]', author || '');
       } else {
         const { data: lic } = await octokit.rest.licenses.get({ license: state.license === 'apache' ? 'apache-2.0' : 'gpl-3.0' });
         licenseText = lic.body;
@@ -198,7 +198,7 @@ export default async function() {
     
     await text({ message: 'Press Enter to return to menu...' });
 
-  } catch (err) {
+  } catch (err: any) {
     s.stop(chalk.red('Failed'));
     console.error(chalk.red(err.message));
     await text({ message: 'Press Enter to return to menu...' });

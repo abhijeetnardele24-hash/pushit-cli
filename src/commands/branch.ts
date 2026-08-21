@@ -59,7 +59,7 @@ export default async function manageBranches() {
         await git.branch([newBranch]);
         s.stop(chalk.green(`✓ Created branch ${newBranch}`));
       }
-    } catch (err) {
+    } catch (err: any) {
       s.stop(chalk.red('Failed to create branch'));
       console.error(chalk.red(err.message));
     }
@@ -83,9 +83,9 @@ export default async function manageBranches() {
     const s = spinner();
     s.start(`Switching to ${targetBranch}...`);
     try {
-      await git.checkout(targetBranch);
+      await git.checkout(targetBranch as string);
       s.stop(chalk.green(`✓ Switched to ${targetBranch}`));
-    } catch (err) {
+    } catch (err: any) {
       s.stop(chalk.red('Failed to switch branch'));
       console.error(chalk.red(err.message));
     }
@@ -112,9 +112,9 @@ export default async function manageBranches() {
     const s = spinner();
     s.start(`Deleting ${targetBranch}...`);
     try {
-      await git.deleteLocalBranch(targetBranch);
+      await git.deleteLocalBranch(targetBranch as string);
       s.stop(chalk.green(`✓ Deleted branch ${targetBranch}`));
-    } catch (err) {
+    } catch (err: any) {
       s.stop(chalk.red('Failed to delete branch'));
       console.error(chalk.red(err.message));
     }

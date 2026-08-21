@@ -9,10 +9,10 @@ import { getUsername } from '../lib/config.js';
 
 const execAsync = promisify(exec);
 
-function timeAgo(dateString) {
+function timeAgo(dateString: string | number | Date) {
   const date = new Date(dateString);
   const now = new Date();
-  const seconds = Math.floor((now - date) / 1000);
+  const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
   
   let interval = Math.floor(seconds / 31536000);
   if (interval >= 1) return interval + " year" + (interval === 1 ? "" : "s") + " ago";
@@ -29,7 +29,7 @@ function timeAgo(dateString) {
 
 const PAGE_SIZE = 10;
 
-export default async function listRepos(page = 0, allRepos = null) {
+export default async function listRepos(page = 0, allRepos: any[] | null = null): Promise<void> {
   const octokit = getOctokit();
   
   if (!allRepos) {
@@ -42,7 +42,7 @@ export default async function listRepos(page = 0, allRepos = null) {
         per_page: 100
       });
       s.stop();
-    } catch (err) {
+    } catch (err: any) {
       s.stop(chalk.red('Failed to fetch repositories'));
       console.error(chalk.red(err.message));
       await text({ message: 'Press Enter to return to menu...' });
@@ -73,8 +73,8 @@ export default async function listRepos(page = 0, allRepos = null) {
     table.push([
       repo.name,
       repo.private ? 'Private' : 'Public',
-      repo.private ? '—' : repo.stargazers_count,
-      timeAgo(repo.updated_at)
+      repo.private ? '-' : repo.stargazers_count,
+      repo.updated_at ? timeAgo(repo.updated_at) : 'unknown'
     ]);
   });
 
@@ -82,23 +82,23 @@ export default async function listRepos(page = 0, allRepos = null) {
   console.log(chalk.gray(`Page ${page + 1} of ${totalPages} (Total Repos: ${allRepos.length})`));
   console.log();
 
-  const options = [];
+  const options: any[] = [];
   
   if (page > 0) {
-    options.push({ value: 'prev', label: '⬅️  Previous Page' });
+    options.push({ value: 'prev', label: '←  Previous Page' });
   }
   if (page < totalPages - 1) {
-    options.push({ value: 'next', label: '➡️  Next Page' });
+    options.push({ value: 'next', label: '→  Next Page' });
   }
 
   options.push(...pageRepos.map(r => ({ value: r, label: r.name })));
   options.push({ value: 'bulk_delete', label: '🗑️  Bulk Delete Repositories' });
-  options.push({ value: 'back', label: '⬅️  Back to main menu' });
+  options.push({ value: 'back', label: '↵  Back to main menu' });
 
   const repoSelection = await select({
     message: 'Select a repository to manage, or choose an action:',
     options
-  });
+  }) as any;
 
   if (isCancel(repoSelection) || repoSelection === 'back') return;
 
@@ -116,12 +116,12 @@ export default async function listRepos(page = 0, allRepos = null) {
   await manageRepo(repoSelection, page, allRepos);
 }
 
-async function handleBulkDelete(allRepos) {
-  const selectedRepos = await multiselect({
+async function handleBulkDelete(allRepos: any[]): Promise<void> {
+  const selectedRepos = (await multiselect({
     message: 'Select repositories to DELETE (Space to select, Enter to confirm):',
     options: allRepos.map(r => ({ value: r, label: r.name })),
     required: false
-  });
+  })) as any[];
 
   if (isCancel(selectedRepos) || selectedRepos.length === 0) {
     return listRepos(0, allRepos);
@@ -140,7 +140,7 @@ async function handleBulkDelete(allRepos) {
   const s = spinner();
   s.start(`Deleting ${selectedRepos.length} repositories...`);
   const octokit = getOctokit();
-  const username = getUsername();
+  const username = getUsername() || '';
 
   let successCount = 0;
   for (const repo of selectedRepos) {
@@ -150,7 +150,7 @@ async function handleBulkDelete(allRepos) {
         repo: repo.name
       });
       successCount++;
-    } catch (err) {
+    } catch (err: any) {
       console.log(chalk.red(`Failed to delete ${repo.name}: ${err.message}`));
     }
   }
@@ -160,7 +160,7 @@ async function handleBulkDelete(allRepos) {
   return listRepos(); // Re-fetch repos after deletion
 }
 
-async function manageRepo(repo, page, allRepos) {
+async function manageRepo(repo: any, page: number, allRepos: any[]): Promise<void> {
   const action = await select({
     message: `Manage ${repo.name}:`,
     options: [
@@ -169,14 +169,14 @@ async function manageRepo(repo, page, allRepos) {
       { value: 'rename', label: '✏️  Rename this repo' },
       { value: 'toggle', label: repo.private ? '🔓 Make Public' : '🔒 Make Private' },
       { value: 'delete', label: '❌ Delete this repo' },
-      { value: 'back', label: '⬅️  Back' }
+      { value: 'back', label: '↵  Back' }
     ]
   });
 
   if (isCancel(action) || action === 'back') return listRepos(page, allRepos);
 
   const octokit = getOctokit();
-  const username = getUsername();
+  const username = getUsername() || '';
 
   if (action === 'open') {
     await open(repo.html_url);
@@ -190,7 +190,7 @@ async function manageRepo(repo, page, allRepos) {
       await execAsync(`git clone ${repo.clone_url}`);
       s.stop(chalk.green(`✓ Successfully cloned ${repo.name} into current directory.`));
       await text({ message: 'Press Enter to return...' });
-    } catch (err) {
+    } catch (err: any) {
       s.stop(chalk.red('Failed to clone'));
       console.error(chalk.red(err.message));
       await text({ message: 'Press Enter to return...' });
@@ -215,7 +215,7 @@ async function manageRepo(repo, page, allRepos) {
         s.stop(chalk.green(`✓ Deleted ${repo.name}`));
         await text({ message: 'Press Enter to return...' });
         return listRepos(); // Re-fetch to reflect deletion
-      } catch (err) {
+      } catch (err: any) {
         s.stop(chalk.red('Failed to delete'));
         console.error(chalk.red(err.message));
         await text({ message: 'Press Enter to return...' });
@@ -229,10 +229,10 @@ async function manageRepo(repo, page, allRepos) {
   }
 
   if (action === 'rename') {
-    const newName = await text({
+    const newName = (await text({
       message: 'New repository name:',
       defaultValue: repo.name
-    });
+    })) as string;
     if (isCancel(newName) || !newName || newName === repo.name) return manageRepo(repo, page, allRepos);
 
     const s = spinner();
@@ -246,7 +246,7 @@ async function manageRepo(repo, page, allRepos) {
       s.stop(chalk.green(`✓ Renamed to ${updated.name}`));
       await text({ message: 'Press Enter to return...' });
       return listRepos(); // Re-fetch to reflect rename
-    } catch (err) {
+    } catch (err: any) {
       s.stop(chalk.red('Failed to rename'));
       console.error(chalk.red(err.message));
       await text({ message: 'Press Enter to return...' });
@@ -267,7 +267,7 @@ async function manageRepo(repo, page, allRepos) {
       s.stop(chalk.green(`✓ Changed visibility to ${newVisibility ? 'Private' : 'Public'}`));
       await text({ message: 'Press Enter to return...' });
       return listRepos(); // Re-fetch
-    } catch (err) {
+    } catch (err: any) {
       s.stop(chalk.red('Failed to change visibility'));
       console.error(chalk.red(err.message));
       await text({ message: 'Press Enter to return...' });

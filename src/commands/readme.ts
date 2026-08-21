@@ -31,7 +31,7 @@ export default async function generateReadme() {
   });
   if (isCancel(usage)) return;
 
-  const license = await select({
+  const license = (await select({
     message: 'License:',
     options: [
       { value: 'MIT', label: 'MIT' },
@@ -39,12 +39,12 @@ export default async function generateReadme() {
       { value: 'GPL 3.0', label: 'GPL 3.0' },
       { value: 'None', label: 'None' }
     ]
-  });
+  })) as string | symbol;
   if (isCancel(license)) return;
 
   const badges = `
 ![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)
-![License](https://img.shields.io/badge/license-${encodeURIComponent(license)}-green.svg)
+![License](https://img.shields.io/badge/license-${encodeURIComponent(license as string)}-green.svg)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
 `;
 
@@ -96,7 +96,7 @@ ${license !== 'None' ? `\n## License\n\nThis project is licensed under the ${lic
       const branchInfo = await git.branchLocal();
       await git.push(['-u', 'origin', branchInfo.current]);
       s.stop(chalk.green('✓ Pushed to GitHub'));
-    } catch (err) {
+    } catch (err: any) {
       s.stop(chalk.red('Failed to push'));
       console.error(chalk.red(err.message));
     }
