@@ -85,18 +85,18 @@ PushIt CLI is engineered as an open-source, extensible platform. It utilizes a m
 
 ```mermaid
 graph TD
-    subgraph Terminal Interface
+    subgraph TerminalInterface [Terminal Interface]
         CLI[PushIt CLI Entrypoint 'pi']
         Prompts[Interactive Console Prompts]
     end
 
-    subgraph Core Routing Engine
+    subgraph CoreRoutingEngine [Core Routing Engine]
         Router[Dynamic ES6 Import Router]
         Middleware[Pre-flight Validation Checks]
         Error[Global Exception Handler]
     end
 
-    subgraph Operations & Automation
+    subgraph OperationsAutomation [Operations and Automation]
         GitOps[Local Git Core Operations]
         GitHubAPI[Octokit REST API Client]
         AIEngine[Diff Parser & Commit Generator]
@@ -114,9 +114,9 @@ graph TD
     GitHubAPI --> Error
     AIEngine --> Error
 
-    style Terminal Interface fill:#e3f2fd,stroke:#90caf9
-    style Core Routing Engine fill:#f1f8e9,stroke:#aed581
-    style Operations & Automation fill:#fff3e0,stroke:#ffb74d
+    style TerminalInterface fill:#e3f2fd,stroke:#90caf9
+    style CoreRoutingEngine fill:#f1f8e9,stroke:#aed581
+    style OperationsAutomation fill:#fff3e0,stroke:#ffb74d
 ```
 
 ### 5.1 Design Principles
