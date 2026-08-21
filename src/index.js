@@ -107,8 +107,6 @@ async function main() {
   console.log(chalk.magentaBright(asciiLogo));
   intro(chalk.bgMagenta.black(` v${pkg.version} `) + chalk.dim(` · [${userStr}]`));
   
-  await checkAuth();
-
   await mainMenu();
 }
 
