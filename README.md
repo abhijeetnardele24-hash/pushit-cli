@@ -1,136 +1,76 @@
 <div align="center">
-  <pre>
-  ___ _   _ ___ _  _ ___ _____ 
- | _ \ | | / __| || |_ _|_   _|
- |  _/ |_| \__ \ __ || |  | |  
- |_|  \___/|___/_||_|___| |_|  
-  </pre>
-  <h1>PushIt CLI</h1>
-  <p><b>Advanced Interactive GitHub Workflow and Developer Productivity Engine</b></p>
+  <h1>🚀 PushIt CLI (v2.0)</h1>
+  <p><b>The Easiest, Fastest, and Smartest Way to Manage Git and GitHub from your Terminal.</b></p>
 
   [![npm version](https://img.shields.io/npm/v/pushit-cli.svg?style=flat-square&color=blue)](https://www.npmjs.com/package/pushit-cli)
-  [![Node.js Git CLI](https://img.shields.io/node/v/pushit-cli.svg?style=flat-square&color=green)]()
   [![License](https://img.shields.io/npm/l/pushit-cli.svg?style=flat-square&color=yellow)](#license)
   [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)]()
   
   <br />
 
-  **If you find PushIt CLI helpful, please give it a Star on GitHub!**
+  **If you find PushIt CLI helpful, please give it a Star on GitHub! ⭐**
 </div>
 
 ---
 
-## 1. Overview
+## ⚡ What is PushIt CLI?
 
-PushIt CLI is an enterprise-grade, terminal-native application designed to optimize and automate the modern developer's Git and GitHub workflows. 
+PushIt CLI (`pi`) is a completely interactive, terminal-native application designed to completely eliminate the friction of Git and GitHub workflows. 
 
-By abstracting complex Git operations and GitHub REST API interactions into a centralized, interactive command-line dashboard, PushIt CLI drastically reduces context switching. From algorithmic AI commit generation to granular interactive file staging and robust undo management, the CLI serves as a unified productivity tool for software engineering teams.
-
-## 2. Core Capabilities
-
-- **Algorithmic Commit Generation**: Automatically analyzes `git diff` outputs to generate context-aware, conventional commit messages (`feat`, `fix`, `chore`, etc.), ensuring pristine Git history without manual overhead.
-- **Interactive File Staging**: Replaces standard `git add .` operations with a precise, multi-select terminal buffer, allowing developers to meticulously curate their staging area.
-- **Git Undo Management**: Safely perform soft resets and manipulate the `HEAD` pointer without corrupting the working directory, supported by an interactive stash manager.
-- **Automated Repository Bootstrapping**: Interfaces directly with the GitHub API to instantly initialize remote repositories, pull standard `.gitignore` profiles, and apply licensing templates.
+Instead of typing out long, complex Git commands or struggling to write good commit messages, `pi` gives you a beautiful, keyboard-driven dashboard right in your terminal. **Just type `pi` and press Enter.**
 
 ---
 
-## 3. Installation & Setup
+## 🔥 New in v2.0
 
-PushIt CLI is distributed as a global Node.js binary. Ensure your local environment meets the minimum requirements before installation.
+We completely rebuilt PushIt CLI from the ground up in **TypeScript** to be faster, more secure, and wildly more powerful.
 
-### 3.1 Prerequisites
-- **Node.js**: Version 18.0.0 or higher.
-- **Git**: Installed and available in your system path.
+- 🧠 **Bring-Your-Own-Key AI Commits:** Integrated directly with **Google Gemini 1.5 Flash**. The CLI instantly analyzes your `git diff` and intelligently writes 3 conventional commit message options for you.
+- 🔌 **Zero-Config Local Mode:** GitHub authentication is now completely optional! Use `pi` for local Git branching, history, and pushing without ever needing a GitHub API token.
+- 🪄 **Auto-Connect Empty Folders:** Ran `pi` in a folder that isn't a Git repo? No problem. The CLI automatically initializes the folder, asks for a GitHub URL, and securely connects them in seconds.
+- 🎨 **Premium UI Polish:** Redesigned interface using modern cyan terminal aesthetics and Clack prompts for a buttery-smooth developer experience.
 
-### 3.2 Global Installation
-Install the package globally via NPM to register the binary commands:
+---
+
+## 🛠️ Core Capabilities
+
+- **Algorithmic AI Commit Generation**: Eliminates the mental overhead of writing commit messages by scanning your staged files and suggesting the perfect message.
+- **Interactive File Staging**: A beautiful multi-select terminal buffer lets you meticulously choose exactly which files to stage (say goodbye to blindly running `git add .`).
+- **History & Undo Manager**: Safely perform soft resets and manipulate your `HEAD` pointer without ever corrupting your working directory.
+- **Automated Repository Bootstrapping**: Interfaces directly with the GitHub API to instantly create remote repositories, pull standard `.gitignore` profiles, and apply licensing templates in one click.
+- **PRs, Issues, and CI/CD**: Manage your entire GitHub ecosystem without ever opening a web browser.
+
+---
+
+## 🚀 Installation & Setup
+
+PushIt CLI is distributed as a global Node.js binary.
+
+### 1. Global Installation
+Install the package globally via NPM to register the `pi` command:
 
 ```bash
 npm install -g pushit-cli
 ```
 
-### 3.3 Initial Configuration
-On the first execution, PushIt CLI requires authorization to interact with your GitHub account. 
-
-1. Run the CLI using the `pi` command.
-2. The CLI will initiate the GitHub OAuth Device Flow and provide an 8-character code.
-3. Press `Enter` to open your browser, paste the code, and grant access.
-4. Your secure OAuth token is encrypted and persisted locally for all future sessions.
-
----
-
-## 4. Getting Started
-
-PushIt CLI registers two global commands: `pushit` and the shorthand `pi`. 
-
-Navigate to any local Git repository (or an empty directory if you intend to initialize a new repository) and execute the CLI:
+### 2. Getting Started
+Navigate to any project directory (or a completely empty folder) and execute the CLI:
 
 ```bash
-cd /path/to/your/project
+cd /your/project
 pi
 ```
 
-### The Interactive Dashboard
-Upon launch, you will be presented with a navigable menu driven by your arrow keys. 
-- Select **"Stage & Commit"** to enter the interactive multi-select buffer for your modified files.
-- Select **"Undo Last Commit"** to securely revert your `HEAD` pointer.
-- Select **"Initialize Remote"** to rapidly bootstrap a new GitHub repository from your local directory.
+### 3. Enabling AI Commits (Optional)
+1. Get a free API Key from [Google AI Studio](https://aistudio.google.com/app/apikey)
+2. Open `pi` in your terminal and select **Settings & Config** -> **Configure AI Commit Assistant**
+3. Paste the key. The next time you run `pi push`, it will automatically analyze your code and suggest commit messages!
 
 ---
 
-## 5. System Architecture & Design
+## 🏗️ Open Source Contribution
 
-PushIt CLI is engineered as an open-source, extensible platform. It utilizes a modular, middleware-driven architecture to ensure fault tolerance and rapid execution times.
-
-```mermaid
-graph TD
-    subgraph TerminalInterface [Terminal Interface]
-        CLI[PushIt CLI Entrypoint 'pi']
-        Prompts[Interactive Console Prompts]
-    end
-
-    subgraph CoreRoutingEngine [Core Routing Engine]
-        Router[Dynamic ES6 Import Router]
-        Middleware[Pre-flight Validation Checks]
-        Error[Global Exception Handler]
-    end
-
-    subgraph OperationsAutomation [Operations and Automation]
-        GitOps[Local Git Core Operations]
-        GitHubAPI[Octokit REST API Client]
-        AIEngine[Diff Parser & Commit Generator]
-    end
-
-    CLI --> Router
-    Router --> Middleware
-    Middleware --> Prompts
-    
-    Prompts --> GitOps
-    Prompts --> GitHubAPI
-    Prompts --> AIEngine
-    
-    GitOps --> Error
-    GitHubAPI --> Error
-    AIEngine --> Error
-
-    style TerminalInterface fill:#e3f2fd,stroke:#90caf9
-    style CoreRoutingEngine fill:#f1f8e9,stroke:#aed581
-    style OperationsAutomation fill:#fff3e0,stroke:#ffb74d
-```
-
-### 5.1 Design Principles
-1. **Dynamic Command Registry**: To maintain sub-second startup times, command modules (`src/commands/*.js`) are never bundled into a monolithic execution block. They are strictly lazy-loaded at runtime based on the user's navigational selection.
-2. **Pre-Flight Validation**: A middleware layer intercepts all executions to validate the directory state (e.g., verifying the presence of a `.git` structure) before yielding control to the specific operation, preventing cryptic runtime failures.
-3. **Graceful Degradation**: Centralized synchronous and asynchronous exception handlers ensure that network timeouts or malformed Git states do not crash the terminal or leave orphaned background processes.
-
----
-
-## 6. Open Source Contribution
-
-PushIt CLI is built by the community, for the community. We highly encourage developers to contribute features, architectural optimizations, or documentation improvements.
-
-### 6.1 Local Development Environment
+PushIt CLI is built by developers, for developers. We highly encourage you to contribute!
 
 1. **Clone the Repository**
 ```bash
@@ -138,34 +78,20 @@ git clone https://github.com/abhijeetnardele24-hash/pushit-cli.git
 cd pushit-cli
 ```
 
-2. **Install Dependencies**
+2. **Install & Build**
 ```bash
 npm install
-```
-
-3. **Compile the TypeScript Source**
-```bash
 npm run build
 ```
 
-4. **Symlink the Binary**
-Link the local package to your global node execution path to test the CLI live:
+3. **Symlink for Local Testing**
 ```bash
 npm link
-```
-
-5. **Execute Local Build**
-```bash
 pi
 ```
 
-### 6.2 Pull Request Guidelines
-- Ensure all new command modules adhere to the dynamic import structure.
-- Run local linting checks before submitting a PR.
-- Clearly describe the architectural intent of any new feature in your PR description.
-
 ---
 
-## 7. License
+## 📜 License
 
 This software is distributed under the [MIT License](LICENSE).
