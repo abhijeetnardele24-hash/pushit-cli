@@ -127,15 +127,7 @@ async function mainMenu() {
 async function main() {
   const userStr = getUsername() || 'Local Mode';
   
-  const asciiLogo = `
-  ___ _   _ ___ _  _ ___ _____ 
- | _ \\ | | / __| || |_ _|_   _|
- |  _/ |_| \\__ \\ __ || |  | |  
- |_|  \\___/|___/_||_|___| |_|  
-  `;
-  
-  console.log(chalk.cyanBright(asciiLogo));
-  intro(chalk.bgCyan.black(` v${pkg.version} `) + chalk.dim(` · [${userStr}]`));
+  intro(chalk.bgCyan.black(` pushit-cli v${pkg.version} `) + chalk.dim(` · [${userStr}]`));
   
   await mainMenu();
 }
