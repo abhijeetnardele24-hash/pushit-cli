@@ -1,4 +1,5 @@
 import { simpleGit, SimpleGit } from 'simple-git';
+import Conf from 'conf';
 
 export function getGit(dir: string = process.cwd()): SimpleGit {
   return simpleGit(dir);
@@ -31,9 +32,16 @@ export async function getRepoInfo(dir: string = process.cwd()): Promise<RepoInfo
   }
   return null;
 }
+
 export async function initAndConnectRemote(url: string, dir: string = process.cwd()): Promise<void> {
   const git = getGit(dir);
   await git.init();
+  
+  // Force local branch to match the user's preferred default branch setting (default 'main')
+  const config = new Conf({ projectName: 'pushit' });
+  const defaultBranch = config.get('default_branch', 'main') as string;
+  await git.branch(['-M', defaultBranch]);
+
   await git.addRemote('origin', url);
   try {
     await git.fetch();
