@@ -7,6 +7,10 @@ import { getGit, isRepo } from '../lib/git.js';
 import { getUsername } from '../lib/config.js';
 import Table from 'cli-table3';
 
+export const config = {
+  requireAuth: true
+};
+
 export default async function() {
   const folderName = path.basename(process.cwd());
 

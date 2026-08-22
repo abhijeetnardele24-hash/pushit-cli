@@ -31,3 +31,13 @@ export async function getRepoInfo(dir: string = process.cwd()): Promise<RepoInfo
   }
   return null;
 }
+export async function initAndConnectRemote(url: string, dir: string = process.cwd()): Promise<void> {
+  const git = getGit(dir);
+  await git.init();
+  await git.addRemote('origin', url);
+  try {
+    await git.fetch();
+  } catch (err: any) {
+    // If repo is totally empty on remote, fetch might fail, which is okay.
+  }
+}

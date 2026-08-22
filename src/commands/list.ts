@@ -7,6 +7,10 @@ import { promisify } from 'util';
 import { getOctokit } from '../lib/github.js';
 import { getUsername } from '../lib/config.js';
 
+export const config = {
+  requireAuth: true
+};
+
 const execAsync = promisify(exec);
 
 function timeAgo(dateString: string | number | Date) {

@@ -30,11 +30,13 @@
   "license": "MIT",
   "dependencies": {
     "@clack/prompts": "^0.7.0",
+    "@google/generative-ai": "^0.24.1",
     "@octokit/rest": "^20.0.0",
     "chalk": "^5.3.0",
     "cli-table3": "^0.6.3",
     "commander": "^12.0.0",
     "conf": "^12.0.0",
+    "gradient-string": "^3.0.0",
     "open": "^10.0.0",
     "ora": "^7.0.0",
     "simple-git": "^3.22.0"
@@ -44,6 +46,7 @@
   },
   "devDependencies": {
     "@octokit/types": "^17.0.0",
+    "@types/gradient-string": "^1.1.6",
     "@types/node": "^26.2.0",
     "typescript": "^7.0.2"
   }

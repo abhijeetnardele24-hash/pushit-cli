@@ -5,6 +5,11 @@ import open from 'open';
 import { getOctokit } from '../lib/github.js';
 import { getRepoInfo } from '../lib/git.js';
 
+export const config = {
+  requireAuth: true,
+  requireGit: true
+};
+
 export default async function() {
   const repoInfo = await getRepoInfo();
   if (!repoInfo) {
